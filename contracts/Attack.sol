@@ -1,20 +1,20 @@
-# Challenge #11 - Backdoor
+// SPDX-License-Identifier: MIT
 
-To incentivize the creation of more secure wallets in their team, someone has deployed a registry of Gnosis Safe wallets. When someone in the team deploys and registers a wallet, they will earn 10 DVT tokens.
+pragma solidity ^0.8.0;
+import "@gnosis.pm/safe-contracts/contracts/GnosisSafe.sol";
+import "@gnosis.pm/safe-contracts/contracts/proxies/GnosisSafeProxyFactory.sol";
+import "./DamnValuableToken.sol";
+import "hardhat/console.sol";
 
-To make sure everything is safe and sound, the registry tightly integrates with the legitimate Gnosis Safe Proxy Factory, and has some additional safety checks.
+interface InterfaceProxyCreationCallback {
+    function proxyCreated(
+        GnosisSafeProxy proxy,
+        address _singleton,
+        bytes calldata initializer,
+        uint256 saltNonce
+    ) external;
+}
 
-Currently there are four people registered as beneficiaries: Alice, Bob, Charlie and David. The registry has 40 DVT tokens in balance to be distributed among them.
-
-Your goal is to take all funds from the registry. In a single transaction.
-
-# Solution
-
-In order to succeed you will need to be familiar with how Gnosis wallets work. You have a ProxyFactory that will create a GnosisSafe proxies contracts following a certain GnosisSafe model (singleton).
-The trick here is to use the the modules of the proxy contract as a backdoor.
-At setup you are able to set up modules that will call other contracts (Attack contract below) using delegatecall. From there it is easy to have the GnosisSafe contract do whatever you want it to.
-
-```
 contract Attack {
     IProxyCreationCallback private walletRegistry;
     address private proxyFactory;
@@ -83,4 +83,3 @@ contract Attack {
         }
     }
 }
-```

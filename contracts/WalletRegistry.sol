@@ -58,6 +58,7 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
     /**
      @notice Function executed when user creates a Gnosis Safe wallet via GnosisSafeProxyFactory::createProxyWithCallback
              setting the registry's address as the callback.
+             //
      */
     function proxyCreated(
         GnosisSafeProxy proxy,
@@ -77,15 +78,17 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
         require(msg.sender == walletFactory, "Caller must be factory");
         require(singleton == masterCopy, "Fake mastercopy used");
 
-        console.logBytes(initializer[:4]);
+        // console.logBytes(initializer[:4]);
         bytes4 selector = GnosisSafe.setup.selector;
-        console.logBytes4(selector);
+        // console.logBytes4(selector);
 
         // Ensure initial calldata was a call to `GnosisSafe::setup`
         // require(
-        //     bytes4(initializer[:4]) == GnosisSafe.setup.selector,
+        //     string(initializer[:4]) == string(GnosisSafe.setup.selector),
         //     "Wrong initialization"
         // );
+
+        // console.log("max treshold", GnosisSafe(walletAddress).getThreshold());
 
         // Ensure wallet initialization is the expected
         require(
@@ -99,6 +102,7 @@ contract WalletRegistry is IProxyCreationCallback, Ownable {
 
         // Ensure the owner is a registered beneficiary
         address walletOwner = GnosisSafe(walletAddress).getOwners()[0];
+        console.log("walletAddress: ", walletAddress);
 
         require(
             beneficiaries[walletOwner],

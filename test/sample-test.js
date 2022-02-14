@@ -38,15 +38,11 @@ describe('[Challenge] Backdoor', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
-        const walletRegistryAttack = this.walletRegistry.connect(attacker)
+        const attackContract = await (await ethers.getContractFactory('Attack', attacker))
+          .deploy(this.walletRegistry.address, this.walletFactory.address,this.masterCopy.address, attacker.address, this.token.address);
 
-        // walletRegistryAttack.proxyCreated(this.walletFactory.address, attacker.address, "0x00000000", 0)
-        // console.log("balance attacker",await this.token.balanceOf(this.walletRegistry.address))
-        console.log("first storage wallet: ", await web3.eth.getStorageAt(this.walletRegistry.address, 2))
-        console.log("first storage walflet: ", await web3.eth.getStorageAt(this.masterCopy.address, 0))
-        console.log("balance", await this.token.balanceOf(this.masterCopy.address))
-        console.log("balance walletRegistry", await this.token.balanceOf(this.walletRegistry.address))
-    });
+        await attackContract.attack(users)
+    })
 
     after(async function () {
         /** SUCCESS CONDITIONS */
